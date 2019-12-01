@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public int maxMessages = 25;
+    public int maxMessages = 60;
 
     public GameObject consolePanel, textObject;
     public InputField consoleInput;
@@ -15,32 +15,30 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-
-        if (consoleInput.text != "")
-        {
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-            {
-                SendMessageToChat(consoleInput.text, Message.MessageType.playerMessage);
-                consoleInput.text = "";
-            }
-
-        }
-
         if (!consoleInput.isFocused)
         {
             consoleInput.ActivateInputField();
         }
-        else
+
+        if (consoleInput.text != "" &&
+            (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                SendMessageToChat("This is a Triumph", Message.MessageType.aiMessageNormal);
-                Debug.Log("Space");
-            }
+            AddMessage(consoleInput.text, Message.MessageType.playerMessage);
+            ReactToMessage(consoleInput.text);
+            consoleInput.text = "";
         }
     }
 
-    public void SendMessageToChat(string text, Message.MessageType messageType)
+    void ReactToMessage(string text)
+    {
+        var sanitizedText = text.ToLower(); // TODO: remove punctuation
+        if (sanitizedText == "this was a triumph")
+        {
+            AddMessage("I'm making a note here: huge success!", Message.MessageType.aiMessageNormal);
+        }
+    }
+
+    void AddMessage(string text, Message.MessageType messageType)
     {
         if (messageList.Count >= maxMessages)
         {
@@ -50,27 +48,37 @@ public class GameManager : MonoBehaviour
             messageList.Remove(messageList[Index]);
         }
 
-        var newMessage = new Message();
+        var message = new Message();
         var newText = Instantiate(textObject, consolePanel.transform);
 
-        newMessage.textObject = newText.GetComponent<Text>();
-        newMessage.textObject.text = newMessage.text = text;
+        message.textObject = newText.GetComponent<Text>();
 
+        // NOTE: Setting formatting options for various types of messages
+        var delay = 0;
         switch (messageType)
         {
             case Message.MessageType.aiMessageNormal:
                 {
-                    newMessage.textObject.alignment = TextAnchor.LowerRight;
+                    message.textObject.alignment = TextAnchor.LowerRight;
+                    delay = Random.Range(1, 3);
                 }
                 break;
             default:
                 {
-                    newMessage.textObject.alignment = TextAnchor.LowerLeft;
+                    message.textObject.alignment = TextAnchor.LowerLeft;
                 }
                 break;
         }
 
-        messageList.Add(newMessage);
+        // NOTE: Output the message
+        StartCoroutine(DisplayMessage(message, text, delay));
+    }
+
+    IEnumerator DisplayMessage(Message message, string text, int delay)
+    {
+        yield return new WaitForSeconds(delay);
+        messageList.Add(message);
+        message.textObject.text = message.text = text;
     }
 }
 
