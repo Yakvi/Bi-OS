@@ -4,13 +4,15 @@
       "language": "EN",
       "prompts": [
         {
-          "id": 1,
+          "id": 0,
+          "type" : "aiNormal",
           "prompt": "Wake up, Neo...",
           "reprompt": "Wake up!",
           "acceptedResponses": ["what", "huh"]
         },
         {
-          "id": 2,
+          "id": 1,
+          "type" : "aiNormal",
           "prompt": "The Matrix has got you...",
           "reprompt": "The Matrix, Neo...",
           "acceptedResponses": ["what", "huh"]
@@ -21,13 +23,15 @@
       "language": "RU",
       "prompts": [
         {
-          "id": 1,
+          "id": 0,
+          "type" : "aiNormal",
           "prompt": "Проснись, Нео...",
           "reprompt": "Проснись!",
           "acceptedResponses": ["а", "чего"]
         },
         {
-          "id": 2,
+          "id": 1,
+          "type" : "aiNormal",
           "prompt": "Матрица поимела тебя...",
           "reprompt": "Матрица, Нео...",
           "acceptedResponses": ["ы", "что"]

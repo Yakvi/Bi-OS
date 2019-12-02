@@ -4,6 +4,7 @@
 public class Prompt
 {
     public int id;
+    public string type;
     public string prompt;
     public string reprompt;
     public string[] acceptedResponses;
