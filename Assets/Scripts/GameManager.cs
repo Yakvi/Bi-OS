@@ -13,31 +13,40 @@ public class GameManager : MonoBehaviour
 
     public GameLocale locale;
     [SerializeField]
-    PromptCollection collection;
-    
+    Locale prompts;
+
     bool awaitingPrompt = true;
 
     private List<Message> messageList = new List<Message>();
 
-    private void Start() {
-        var promptsJson = Resources.Load<TextAsset>("prompts");
-        collection = JsonUtility.FromJson<PromptCollection>(promptsJson.text);
-        SetGameLanguage();
+    private void Start()
+    {
+        SetGameLanguage(locale.ToString(), "prompts");
     }
 
-    private void SetGameLanguage()
+    private void SetGameLanguage(string lang, string source)
     {
+        var promptsJson = Resources.Load<TextAsset>(source);
+        var collection = JsonUtility.FromJson<PromptCollection>(promptsJson.text);
 
+        foreach (var loc in collection.locales)
+        {
+            if (loc.language == lang)
+            {
+                prompts = loc;
+                break;
+            }
+        }
     }
 
     private void Update()
     {
+        // NOTE: State check
         consoleInput.gameObject.SetActive(awaitingPrompt);
-        if (!consoleInput.isFocused)
-        {
-            consoleInput.ActivateInputField();
-        }
+        if (!consoleInput.isFocused) consoleInput.ActivateInputField();
+        if (locale.ToString() != prompts.language) SetGameLanguage(locale.ToString(), "prompts");
 
+        // NOTE: Input processing
         if (consoleInput.text != "" &&
             (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
         {
@@ -106,8 +115,8 @@ public class GameManager : MonoBehaviour
 
 public enum GameLocale
 {
-    EN, 
-    RU, 
+    EN,
+    RU,
     IT
 }
 
