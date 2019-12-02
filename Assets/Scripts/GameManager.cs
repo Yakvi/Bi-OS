@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,11 +11,28 @@ public class GameManager : MonoBehaviour
     public GameObject consolePanel, textObject;
     public InputField consoleInput;
 
+    public GameLocale locale;
     [SerializeField]
+    PromptCollection collection;
+    
+    bool awaitingPrompt = true;
+
     private List<Message> messageList = new List<Message>();
+
+    private void Start() {
+        var promptsJson = Resources.Load<TextAsset>("prompts");
+        collection = JsonUtility.FromJson<PromptCollection>(promptsJson.text);
+        SetGameLanguage();
+    }
+
+    private void SetGameLanguage()
+    {
+
+    }
 
     private void Update()
     {
+        consoleInput.gameObject.SetActive(awaitingPrompt);
         if (!consoleInput.isFocused)
         {
             consoleInput.ActivateInputField();
@@ -60,7 +78,8 @@ public class GameManager : MonoBehaviour
             case Message.MessageType.aiMessageNormal:
                 {
                     message.textObject.alignment = TextAnchor.LowerRight;
-                    delay = Random.Range(1, 3);
+                    delay = UnityEngine.Random.Range(1, 3);
+                    awaitingPrompt = false;
                 }
                 break;
             default:
@@ -77,9 +96,19 @@ public class GameManager : MonoBehaviour
     IEnumerator DisplayMessage(Message message, string text, int delay)
     {
         yield return new WaitForSeconds(delay);
-        messageList.Add(message);
+
         message.textObject.text = message.text = text;
+        messageList.Add(message);
+
+        if (delay > 0) awaitingPrompt = true;
     }
+}
+
+public enum GameLocale
+{
+    EN, 
+    RU, 
+    IT
 }
 
 [System.Serializable]
