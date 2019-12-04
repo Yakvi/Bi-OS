@@ -139,7 +139,7 @@ public class GameManager : MonoBehaviour
             case Message.MessageType.aiNormal:
                 {
                     message.textObject.alignment = TextAnchor.LowerLeft;
-                    delay = UnityEngine.Random.Range(1, 3);
+                    delay = UnityEngine.Random.Range(1, 2);
                     awaitingPrompt = false;
                 }
                 break;

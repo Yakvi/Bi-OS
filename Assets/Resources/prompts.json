@@ -5,14 +5,14 @@
       "prompts": [
         {
           "id": 0,
-          "type" : "aiNormal",
+          "type": "aiNormal",
           "prompt": "Wake up, Neo...",
           "reprompt": "Wake up!",
           "acceptedResponses": ["what", "huh"]
         },
         {
           "id": 1,
-          "type" : "aiNormal",
+          "type": "aiNormal",
           "prompt": "The Matrix has got you...",
           "reprompt": "The Matrix, Neo...",
           "acceptedResponses": ["what", "huh"]
@@ -24,17 +24,24 @@
       "prompts": [
         {
           "id": 0,
-          "type" : "aiNormal",
+          "type": "aiNormal",
           "prompt": "Проснись, Нео...",
           "reprompt": "Проснись!",
           "acceptedResponses": ["а", "чего"]
         },
         {
           "id": 1,
-          "type" : "aiNormal",
+          "type": "aiNormal",
           "prompt": "Матрица поимела тебя...",
           "reprompt": "Матрица, Нео...",
           "acceptedResponses": ["ы", "что"]
+        },
+        {
+          "id": 2,
+          "type": "aiNormal",
+          "prompt": "Что будем на завтрак",
+          "reprompt": "Не уверен это можно есть",
+          "acceptedResponses": ["яйца", "бутерброд", "омлет", "борщ"]
         }
       ]
     }
