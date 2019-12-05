@@ -10,6 +10,7 @@ public class EditorManager : MonoBehaviour
 
     public Dropdown languageDropdown;
     public InputField consoleInput, IDField;
+    public Button prevPromptButton, nextPromptButton;
 
     public GameLocale gameLang;
 
@@ -23,20 +24,21 @@ public class EditorManager : MonoBehaviour
     {
         // NOTE: Load data
         LoadLocale(gameLang.ToString(), "prompts");
-        currentPrompt = LoadPrompt(0);
+        LoadPrompt(0);
 
         // NOTE: Load UI
         var languageArray = Enum.GetNames(typeof(GameLocale));
         languageDropdown.ClearOptions();
         languageDropdown.AddOptions(new List<string>(languageArray));
 
-        // NOTE: Populate UI
-        ShowFields();
+        prevPromptButton.onClick.AddListener(LoadPrevPrompt);
+        nextPromptButton.onClick.AddListener(LoadNextPrompt);
     }
 
     private void ShowFields()
     {
         IDField.text = currentPrompt.id.ToString();
+
     }
 
     private void Update()
@@ -45,8 +47,9 @@ public class EditorManager : MonoBehaviour
         {
             gameLang = (GameLocale) languageDropdown.value;
             LoadLocale(gameLang.ToString(), "prompts");
-            currentPrompt = ReloadPrompt();
+            ReloadPrompt();
         }
+
         // // NOTE: State check
         // consoleInput.gameObject.SetActive(awaitingPrompt);
         // if (!consoleInput.isFocused) consoleInput.ActivateInputField();
@@ -82,14 +85,14 @@ public class EditorManager : MonoBehaviour
         }
     }
 
-    Prompt ReloadPrompt() { return LoadPrompt(currentPrompt.id); }
-    Prompt LoadNextPrompt() { return LoadPrompt(currentPrompt.id + 1); }
-    Prompt LoadPreviousPrompt() { return LoadPrompt(currentPrompt.id - 1); }
-    Prompt LoadPrompt(int id)
+    void ReloadPrompt() { LoadPrompt(currentPrompt.id); }
+    void LoadNextPrompt() { LoadPrompt(currentPrompt.id + 1); }
+    void LoadPrevPrompt() { LoadPrompt(currentPrompt.id - 1); }
+    void LoadPrompt(int id)
     {
         Prompt result = currentPrompt;
 
-        if (id >= 0 && id <= currentLocale.prompts.Length)
+        if (id >= 0 && id < currentLocale.prompts.Length)
         {
             result = currentLocale.prompts[id];
             if (result.id != id) Debug.LogError("Wrong prompt loaded! Expected prompt ${id}, loaded prompt ${result.id}.");
@@ -99,10 +102,10 @@ public class EditorManager : MonoBehaviour
         {
             // TODO: decipher and load the whole prompt
             Enum.TryParse(result.type, out Message.MessageType type);
-            // PopulateFields(result.prompt, type);
         }
 
-        return (result);
+        currentPrompt = result;
+        ShowFields();
     }
 
     void AddField(string text, Message.MessageType messageType)
