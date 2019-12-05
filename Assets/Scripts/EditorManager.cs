@@ -6,37 +6,64 @@ using UnityEngine.UI;
 
 public class EditorManager : MonoBehaviour
 {
-    public GameObject consolePanel, textObject;
+    public GameObject editorOutput, inputObjectTemplate;
 
     public Dropdown languageDropdown;
-    public InputField consoleInput, IDField;
+    public InputField IDField;
     public Button prevPromptButton, nextPromptButton;
 
     public GameLocale gameLang;
 
     Locale currentLocale;
-    [SerializeField]
     Prompt currentPrompt;
 
-    List<Message> messageList = new List<Message>();
+    [SerializeField]
+    List<Field> fieldList = new List<Field>();
 
     void Start()
     {
-        // NOTE: Load data
-        LoadLocale(gameLang.ToString(), "prompts");
-        LoadPrompt(0);
-
-        // NOTE: Load UI
+        // NOTE: Set language
         var languageArray = Enum.GetNames(typeof(GameLocale));
         languageDropdown.ClearOptions();
         languageDropdown.AddOptions(new List<string>(languageArray));
+        
+        // NOTE: Load data
+        LoadLocale(gameLang.ToString(), "prompts");
+        LoadPrompt(0);
 
         prevPromptButton.onClick.AddListener(LoadPrevPrompt);
         nextPromptButton.onClick.AddListener(LoadNextPrompt);
     }
 
-    private void ShowFields()
+    void ClearFields()
     {
+        if (fieldList.Count > 0)
+        {
+            foreach (var item in fieldList)
+            {
+                Destroy(item.inst.gameObject);
+            }
+            fieldList.Clear();
+        }
+    }
+
+    void AddField(string name, string value)
+    {
+        var field = new Field();
+        field.inst = Instantiate(inputObjectTemplate, editorOutput.transform);
+        field.inst.GetComponentInChildren<Text>().text = name; // Input field title
+        field.inst.GetComponentInChildren<InputField>().SetTextWithoutNotify(value);
+        field.inst.gameObject.name = name + currentPrompt.id; // NOTE: debug
+        
+        field.source = name; 
+        field.value = value;
+        fieldList.Add(field);
+    }
+
+    void ShowFields()
+    {
+        ClearFields();
+        AddField("prompt", currentPrompt.prompt);
         IDField.text = currentPrompt.id.ToString();
 
     }
@@ -59,7 +86,8 @@ public class EditorManager : MonoBehaviour
         // if (field.text != "" &&
         //     (Input.GetKeyDown(KeyCode.Return) || 
         //      Input.GetKeyDown(KeyCode.KeypadEnter) || 
-        //      !field.isFocused)))
+        //      !field.isFocused)
+        //      && field.text != currentPrompt.somefield.value )
         // {
         //     SaveInput(Field.text, TODO: enum???  );
         // }
@@ -107,22 +135,18 @@ public class EditorManager : MonoBehaviour
         currentPrompt = result;
         ShowFields();
     }
+}
 
-    void AddField(string text, Message.MessageType messageType)
+[System.Serializable]
+public class Field
+{
+    public GameObject inst;
+    public FieldType type;
+    public string value;
+    public string source;
+
+    public enum FieldType
     {
-        var message = new Message();
-        var newText = Instantiate(textObject, consolePanel.transform);
-
-        message.textObject = newText.GetComponentInChildren<Text>();
-
-        // TODO: Switch behavior depending on the field type
-        switch (messageType)
-        {
-            default : break;
-        }
-
-        // NOTE: Output the message
-        messageList.Add(message);
-        message.textObject.text = message.text = text;
+        textInput,
     }
 }
