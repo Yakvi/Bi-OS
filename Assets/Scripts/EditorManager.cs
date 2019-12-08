@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -10,14 +11,14 @@ public class EditorManager : MonoBehaviour
     public GameObject editorOutput, inputObjectTemplate;
 
     public Dropdown languageDropdown;
-    public Button prevButton, nextButton, saveButton, resetButton, deleteButton;
+    public Button prevButton, nextButton, saveButton, resetButton, deleteButton, newButton;
 
     public GameLocale gameLang;
 
+    [SerializeField]
     Locale currentLocale; // TODO: Multiple language editor
     Prompt currentPrompt;
 
-    [SerializeField]
     public EditorUI promptEditor; // id, type, prompt, reprompt, responses // TODO: multiple reprompts
 
     void Start()
@@ -31,6 +32,7 @@ public class EditorManager : MonoBehaviour
         // NOTE: Config UI
         prevButton.onClick.AddListener(LoadPrevPrompt);
         nextButton.onClick.AddListener(LoadNextPrompt);
+        newButton.onClick.AddListener(NewPrompt);
         resetButton.onClick.AddListener(ReloadPrompt);
         saveButton.onClick.AddListener(SavePrompt);
         deleteButton.onClick.AddListener(DeletePrompt);
@@ -44,25 +46,45 @@ public class EditorManager : MonoBehaviour
     {
         if (languageDropdown.value != (int) gameLang)
         {
+            SavePrompt();
             gameLang = (GameLocale) languageDropdown.value;
             DeserializeLocale(gameLang.ToString(), "prompts");
             ReloadPrompt();
         }
     }
 
+    private void NewPrompt()
+    {
+        var prompt = new Prompt();
+        prompt.id = currentLocale.prompts.Count;
+        prompt.acceptedResponses = new List<string>();
+        prompt.prompt = "";
+        prompt.reprompt = "";
+        prompt.type = "aiNormal";
+        currentLocale.prompts.Add(prompt);
+        LoadPrompt(prompt.id);
+    }
+
     private void DeletePrompt()
     {
         currentLocale.prompts.Remove(currentLocale.prompts[currentPrompt.id]);
         SerializeLocale(gameLang.ToString(), "prompts");
+        ReloadPrompt();
     }
 
     private void SavePrompt()
     {
         currentPrompt = promptEditor.Read();
-        currentLocale.prompts[currentPrompt.id] = currentPrompt;
+        if (currentPrompt.id < currentLocale.prompts.Count)
+        {
+            currentLocale.prompts[currentPrompt.id] = currentPrompt;
+        }
+        else
+        {
+            currentLocale.prompts.Add(currentPrompt);
+        }
         SerializeLocale(gameLang.ToString(), "prompts");
     }
-
 
     PromptCollection LoadCollection(string source)
     {
@@ -75,16 +97,23 @@ public class EditorManager : MonoBehaviour
 
     private void SerializeLocale(string lang, string source)
     {
+        Assert.IsNotNull(currentLocale);
         var collection = LoadCollection(source);
-        for (var i = 0; i < collection.locales.Length; ++i)
+        var found = false;
+        for (var i = 0; i < collection.locales.Count; ++i)
         {
-            if(collection.locales[i].language == lang)
+            if (collection.locales[i].language == lang)
             {
                 collection.locales[i] = currentLocale;
+                found = true;
             }
         }
+        if (!found) collection.locales.Add(currentLocale);
 
-        JsonUtility.ToJson(collection);
+        var output = JsonUtility.ToJson(collection);
+        var writer = new StreamWriter("Assets/Resources/" + source + ".json"); // Does this work?
+        writer.WriteLine(output);
+        writer.Close();
     }
 
     void DeserializeLocale(string lang, string source)
@@ -100,6 +129,10 @@ public class EditorManager : MonoBehaviour
                 return;
             }
         }
+        currentLocale = new Locale();
+        currentLocale.language = lang;
+        currentLocale.prompts = new List<Prompt>();
+        NewPrompt();
     }
 
     void ReloadPrompt() { LoadPrompt(currentPrompt.id); }
@@ -114,6 +147,10 @@ public class EditorManager : MonoBehaviour
             result = currentLocale.prompts[id];
             if (result.id != id) Debug.LogError(
                 "Wrong prompt loaded! Expected prompt" + id + ", loaded prompt" + result.id);
+        }
+        else if (id >= 0 && currentLocale.prompts.Count > 0)
+        {
+            result = currentLocale.prompts[currentLocale.prompts.Count - 1];
         }
 
         currentPrompt = result;

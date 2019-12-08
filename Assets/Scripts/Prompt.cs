@@ -20,5 +20,5 @@ public class Locale
 [System.Serializable]
 public class PromptCollection
 {
-    public Locale[] locales;
+    public List<Locale> locales;
 }
