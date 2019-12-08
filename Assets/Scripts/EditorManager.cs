@@ -33,20 +33,12 @@ public class EditorManager : MonoBehaviour
         nextButton.onClick.AddListener(LoadNextPrompt);
         resetButton.onClick.AddListener(ReloadPrompt);
         saveButton.onClick.AddListener(SavePrompt);
-        // deleteButton.onClick.AddListener(DeletePrompt);
+        deleteButton.onClick.AddListener(DeletePrompt);
 
         // NOTE: Serialize data to memory
         DeserializeLocale(gameLang.ToString(), "prompts");
         LoadPrompt(0);
     }
-
-    private void SavePrompt()
-    {
-        currentPrompt = promptEditor.Read();
-        currentLocale.prompts[currentPrompt.id] = currentPrompt;
-        SerializeLocale(gameLang.ToString(), "prompts");
-    }
-
 
     private void Update()
     {
@@ -57,6 +49,20 @@ public class EditorManager : MonoBehaviour
             ReloadPrompt();
         }
     }
+
+    private void DeletePrompt()
+    {
+        currentLocale.prompts.Remove(currentLocale.prompts[currentPrompt.id]);
+        SerializeLocale(gameLang.ToString(), "prompts");
+    }
+
+    private void SavePrompt()
+    {
+        currentPrompt = promptEditor.Read();
+        currentLocale.prompts[currentPrompt.id] = currentPrompt;
+        SerializeLocale(gameLang.ToString(), "prompts");
+    }
+
 
     PromptCollection LoadCollection(string source)
     {
