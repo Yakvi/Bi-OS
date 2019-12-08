@@ -6,8 +6,8 @@ public class ListInputBox : InputBox
     public Button buttonRemove; 
     public InputList parent;
 
-    void Awake() {
-        base.Start();
+    public override void Awake() {
+        base.Awake();
         buttonRemove.onClick.AddListener(Remove);
     }
 

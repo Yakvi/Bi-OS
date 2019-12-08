@@ -15,7 +15,8 @@ public class EditorUI : MonoBehaviour
 
     }
 
-    private void Update() {
+    private void Update()
+    {
         // Read(); // For debugging
     }
 

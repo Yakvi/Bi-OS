@@ -7,7 +7,7 @@ public class DropdownBox : MonoBehaviour
     public Dropdown input;
     public DataString data;
 
-    private void Start()
+    private void Awake()
     {
         data = ScriptableObject.CreateInstance<DataString>();
         

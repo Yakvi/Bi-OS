@@ -9,7 +9,7 @@ public class InputBox : MonoBehaviour
     
     private string dataBuffer = "";
 
-    public virtual void Start()
+    public virtual void Awake()
     {
         data = ScriptableObject.CreateInstance<DataString>();
     }

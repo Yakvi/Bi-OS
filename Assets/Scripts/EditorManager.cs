@@ -27,6 +27,7 @@ public class EditorManager : MonoBehaviour
         var languageArray = Enum.GetNames(typeof(GameLocale));
         languageDropdown.ClearOptions();
         languageDropdown.AddOptions(new List<string>(languageArray));
+        languageDropdown.value = 1; // TODO: multiple language support in game
         gameLang = (GameLocale) languageDropdown.value;
 
         // NOTE: Config UI

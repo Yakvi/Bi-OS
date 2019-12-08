@@ -49,7 +49,7 @@ public class InputList : MonoBehaviour
 
     public void Clear()
     {
-        if (data.Count > 0)
+        if (data?.Count > 0)
         {
             for (int i = data.Count - 1; i >= 0; i--)
             {
