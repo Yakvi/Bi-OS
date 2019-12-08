@@ -38,7 +38,7 @@ public class EditorUI : MonoBehaviour
         }
     }
 
-    public void Read()
+    public Prompt Read()
     {
         // NOTE: Clear
         buffer.id = 0;
@@ -54,5 +54,7 @@ public class EditorUI : MonoBehaviour
         {
             buffer.acceptedResponses.Add(answer.data.data);
         }
+
+        return buffer;
     }
 }

@@ -14,7 +14,7 @@ public class Prompt
 public class Locale
 {
     public string language;
-    public Prompt[] prompts;
+    public List<Prompt> prompts;
 }
 
 [System.Serializable]
