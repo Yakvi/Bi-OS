@@ -1153,6 +1153,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1354674967701457762}
+  - component: {fileID: 1360286978736418808}
   m_Layer: 5
   m_Name: Dropdown
   m_TagString: Untagged
@@ -1181,3 +1182,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -0.000030517578}
   m_SizeDelta: {x: 160, y: 60.6}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &1360286978736418808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9180805744138976299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bb754d821bebc541967726c40dcc0b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  label: {fileID: 5116207552951860722}
+  input: {fileID: 1907212656872022025}
+  data: {fileID: 0}

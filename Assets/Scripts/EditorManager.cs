@@ -9,16 +9,15 @@ public class EditorManager : MonoBehaviour
     public GameObject editorOutput, inputObjectTemplate;
 
     public Dropdown languageDropdown;
-    public InputField IDField;
     public Button prevPromptButton, nextPromptButton;
 
     public GameLocale gameLang;
 
-    Locale currentLocale;
+    Locale currentLocale; // TODO: Multiple language editor
     Prompt currentPrompt;
 
     [SerializeField]
-    List<Field> fieldList = new List<Field>();
+    public EditorUI promptEditor; // id, type, prompt, reprompt, responses // TODO: multiple reprompts
 
     void Start()
     {
@@ -26,46 +25,15 @@ public class EditorManager : MonoBehaviour
         var languageArray = Enum.GetNames(typeof(GameLocale));
         languageDropdown.ClearOptions();
         languageDropdown.AddOptions(new List<string>(languageArray));
-        
-        // NOTE: Load data
-        LoadLocale(gameLang.ToString(), "prompts");
-        LoadPrompt(0);
+        gameLang = (GameLocale) languageDropdown.value;
 
+        // NOTE: Config UI
         prevPromptButton.onClick.AddListener(LoadPrevPrompt);
         nextPromptButton.onClick.AddListener(LoadNextPrompt);
-    }
 
-    void ClearFields()
-    {
-        if (fieldList.Count > 0)
-        {
-            foreach (var item in fieldList)
-            {
-                Destroy(item.inst.gameObject);
-            }
-            fieldList.Clear();
-        }
-    }
-
-    void AddField(string name, string value)
-    {
-        var field = new Field();
-        field.inst = Instantiate(inputObjectTemplate, editorOutput.transform);
-        field.inst.GetComponentInChildren<Text>().text = name; // Input field title
-        field.inst.GetComponentInChildren<InputField>().SetTextWithoutNotify(value);
-        field.inst.gameObject.name = name + currentPrompt.id; // NOTE: debug
-        
-        field.source = name; 
-        field.value = value;
-        fieldList.Add(field);
-    }
-
-    void ShowFields()
-    {
-        ClearFields();
-        AddField("prompt", currentPrompt.prompt);
-        IDField.text = currentPrompt.id.ToString();
-
+        // NOTE: Serialize data to memory
+        LoadLocale(gameLang.ToString(), "prompts");
+        LoadPrompt(0);
     }
 
     private void Update()
@@ -89,7 +57,7 @@ public class EditorManager : MonoBehaviour
         //      !field.isFocused)
         //      && field.text != currentPrompt.somefield.value )
         // {
-        //     SaveInput(Field.text, TODO: enum???  );
+        //     currentPrompt = ReadUI();
         // }
     }
 
@@ -123,30 +91,17 @@ public class EditorManager : MonoBehaviour
         if (id >= 0 && id < currentLocale.prompts.Length)
         {
             result = currentLocale.prompts[id];
-            if (result.id != id) Debug.LogError("Wrong prompt loaded! Expected prompt ${id}, loaded prompt ${result.id}.");
-        }
-
-        if (result != null)
-        {
-            // TODO: decipher and load the whole prompt
-            Enum.TryParse(result.type, out Message.MessageType type);
+            if (result.id != id) Debug.LogError(
+                "Wrong prompt loaded! Expected prompt" + id + ", loaded prompt" + result.id);
         }
 
         currentPrompt = result;
-        ShowFields();
+        WriteUI(currentPrompt);
     }
-}
 
-[System.Serializable]
-public class Field
-{
-    public GameObject inst;
-    public FieldType type;
-    public string value;
-    public string source;
-
-    public enum FieldType
+    private void WriteUI(Prompt currentPrompt)
     {
-        textInput,
+        promptEditor.Clear();
+        promptEditor.Display(currentPrompt);
     }
 }
