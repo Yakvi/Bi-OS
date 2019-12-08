@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
 
 [System.Serializable]
 public class Prompt
@@ -7,7 +7,7 @@ public class Prompt
     public string type;
     public string prompt;
     public string reprompt;
-    public string[] acceptedResponses;
+    public List<string> acceptedResponses;
 }
 
 [System.Serializable]

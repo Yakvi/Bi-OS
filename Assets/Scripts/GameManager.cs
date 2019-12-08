@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviour
     {
         var sanitizedText = text.ToLower(); // TODO: remove punctuation?
 
-        if (currentPrompt?.acceptedResponses.Length > 0)
+        if (currentPrompt?.acceptedResponses.Count > 0)
         {
             var found = false;
 
